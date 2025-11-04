@@ -1,1 +1,4 @@
-# threejs-outline-contest
+```sh
+yarn
+yarn dev
+```
