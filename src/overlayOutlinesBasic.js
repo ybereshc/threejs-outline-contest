@@ -6,18 +6,20 @@ export function createVisibleOutlineOverlayBasic(renderer, scene, camera, {
 } = {}) {
 
 	// ---------- состояние ----------
-	const size = new THREE.Vector2();
-	const dpr = renderer.getPixelRatio();
-	const ss = Math.max(1, 3 - dpr);              // как у вас
-	const texel = new THREE.Vector2(1, 1);
+	let size = new THREE.Vector2();
+	let dpr = renderer.getPixelRatio();
+	let ss = Math.max(1, 3 - dpr);
+	ss = 1;
+
+	let texel = new THREE.Vector2(1, 1);
 
 	let maskTarget = null;     // RGB = ID
 	let outlineTarget = null;  // итоговый контур
 
 	// экранный вывод
-	const fsScene = new THREE.Scene();
-	const fsCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-	const fsQuad = new THREE.Mesh(
+	let fsScene = new THREE.Scene();
+	let fsCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+	let fsQuad = new THREE.Mesh(
 		new THREE.PlaneGeometry(2, 2),
 		new THREE.MeshBasicMaterial({transparent: true, map: null})
 	);

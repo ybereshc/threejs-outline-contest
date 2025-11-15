@@ -1,7 +1,7 @@
 import './style.css'
 import * as THREE from 'three';
-import Stats from 'three/addons/libs/stats.module.js';
-import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+import Stats from 'stats.js';
+import { GUI } from 'lil-gui';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { createVisibleOutlineOverlayBasic } from './overlayOutlinesBasic.js';
 import { createVisibleOutlineOverlay } from './overlayOutlines.js';
@@ -114,6 +114,7 @@ const createPlacement = ( shape, parameters ) => {
 	depthMesh.renderOrder = -2;
 
 	mesh.add( mesh.depthMesh = depthMesh );
+	// mesh.depthMesh = depthMesh;
 
 	appendStroke( mesh, {
 		width: parameters.strokeWidth,
