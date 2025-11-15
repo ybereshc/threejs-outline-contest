@@ -1,57 +1,37 @@
 import * as THREE from 'three';
-import {LineSegmentsGeometry} from "three/addons/lines/LineSegmentsGeometry.js";
-import {Line2} from "three/addons/lines/Line2.js";
-import {LineMaterial} from "three/addons/lines/LineMaterial.js";
 
-const toWorldGeometry = ( mesh ) => {
-	// гарантируем актуальные мировые матрицы для объекта и иерархии
-	mesh.updateWorldMatrix( true, true ); // рекурсивно
-	// world-geometry = локальная геометрия, умноженная на matrixWorld
-	return mesh.geometry.clone().applyMatrix4( mesh.matrixWorld );
+let _position = new THREE.Vector3();
+let _quaternion = new THREE.Quaternion(); // Для вращения
+let _scale = new THREE.Vector3();
+
+const getSource = ( object ) => {
+	object.matrixWorld.decompose( _position, _quaternion, _scale );
+
+	return {
+		level: _position.y,
+		height: _scale.y,
+		points: object.geometry.parameters.shapes.curves.slice( 0, -1 ).map( curve => curve.v1.clone() ),
+	};
+};
+
+const getStyle = ( object ) => {
+	return {
+		color: object.stroke.color.clone(),
+		hex: `#${ object.stroke.color.getHexString() }`,
+		opacity: object.stroke.opacity,
+		width: object.stroke.width,
+	};
 };
 
 export const createVisibleOutlineOverlay = ( renderer, scene, camera ) => {
-	let size = new THREE.Vector2();
-
-	let targets = [];
-	let edges = [];
-	let map = new Map();
-
-	let lineScene = new THREE.Scene();
-
 	const update = () => {
-		targets.length = 0;
-
 		scene.traverse( ( object ) => {
 			if ( !object.material || !object.geometry || !object.stroke ) return;
 
-			let worldGeometry = toWorldGeometry( object );
+			let source = getSource( object );
+			let style = getStyle( object );
 
-			console.log(worldGeometry);
-
-			let edgeGeo = new THREE.EdgesGeometry( worldGeometry );
-			let lineGeo = new LineSegmentsGeometry().fromEdgesGeometry( edgeGeo );
-			let lineMat = new LineMaterial( {
-				linewidth: 2,
-				color: 0xffffff,
-				opacity: 1,
-				transparent: false,
-				side: THREE.DoubleSide,
-			} );
-
-			let line = new Line2( lineGeo, lineMat );
-
-			line.matrixWorld
-
-			lineScene.add( line );
-
-			// line.computeLineDistances(); // важно
-
-			line.raycast = () => {};
-			line.renderOrder = 1;
-
-			targets.push( object );
-			edges.push( line );
+			console.log({ source,style });
 		} );
 	};
 
@@ -64,7 +44,7 @@ export const createVisibleOutlineOverlay = ( renderer, scene, camera ) => {
 		}
 
 		// renderer.clearDepth( true );
-		renderer.render( lineScene, camera );
+		// renderer.render( lineScene, camera );
 	};
 
 	const dispose = () => {

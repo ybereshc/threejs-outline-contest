@@ -241,6 +241,36 @@ const changeWalls = ( append ) => {
 	scene.add( group );
 };
 
+const changeBox = ( append ) => {
+	scene.remove( scene.getObjectByName( 'box' ) );
+
+	if ( !append ) {
+		return;
+	}
+
+	const group = new THREE.Group( { name: 'box' } );
+	group.name = 'box';
+
+	let boxPoints = [
+		[ -.5, -.5 ],
+		[ -.5, .5 ],
+		[ .5, .5 ],
+		[ .5, -.5 ],
+	];
+
+	let box = createPlacement( boxPoints.map( ( [ x, y ] ) => new THREE.Vector2( x, y ) ), {
+		color: new THREE.Color( 0xeeeeee ),
+	} );
+
+	box.getGeometry( ( geometry ) => {
+		geometry.rotateX( -Math.PI / 2 );
+		geometry.rotateY( Math.PI );
+	} );
+
+	group.add( box );
+	scene.add( group );
+};
+
 let raycaster = new THREE.Raycaster();
 let pointer = new THREE.Vector2();
 
@@ -254,15 +284,15 @@ window.addEventListener( 'pointermove', ( ev ) => {
 	updatePointer( ev );
 } );
 
-// window.addEventListener( 'click', ( ev ) => {
-// 	updatePointer( ev );
-//
-// 	const intersect = raycaster.intersectObject( scene, true )[ 0 ];
-//
-// 	if ( intersect ) {
-// 		console.log(intersect.object);
-// 	}
-// } );
+window.addEventListener( 'dblclick', ( ev ) => {
+	updatePointer( ev );
+
+	const intersect = raycaster.intersectObject( scene, true )[ 0 ];
+
+	if ( intersect ) {
+		console.log(intersect);
+	}
+} );
 
 let lastHover = null;
 
@@ -274,6 +304,7 @@ placeEl.appendChild( stats.dom );
 const params = {
 	walls: true,
 	any: false,
+	box: false,
 	fillOpacity: basicFillOpacity,
 	strokeOpacity: basicStrokeOpacity,
 	strokeWidth: basicStrokeWidth,
@@ -296,13 +327,15 @@ const groupObjects = gui.addFolder( 'Objects' );
 
 let objectWalls = groupObjects
 	.add( params, 'walls' )
-	.name( 'Walls' )
 	.onChange( changeWalls );
 
 let objectAny = groupObjects
 	.add( params, 'any' )
-	.name( 'Any' )
 	.onChange( changeAny );
+
+let objectBox = groupObjects
+	.add( params, 'box' )
+	.onChange( changeBox );
 
 const groupStyle = gui.addFolder( 'Style' );
 
@@ -377,7 +410,7 @@ groupObjects.open();
 groupStyle.open();
 groupBehavior.open();
 
-[ objectWalls, objectAny, styleFillOpacity, styleStrokeOpacity, styleStrokeWidth, behaviorBasic ].forEach( el => {
+[ objectWalls, objectAny, objectBox, styleFillOpacity, styleStrokeOpacity, styleStrokeWidth, behaviorBasic ].forEach( el => {
 	el._onChange?.( el.getValue() );
 } );
 
