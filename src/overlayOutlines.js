@@ -7,7 +7,7 @@ let _scale = new THREE.Vector3();
 const getSource = ( object ) => {
 	object.matrixWorld.decompose( _position, _quaternion, _scale );
 
-	return {
+	return object._source = {
 		level: _position.y,
 		height: _scale.y,
 		points: object.geometry.parameters.shapes.curves.slice( 0, -1 ).map( curve => curve.v1.clone() ),
@@ -15,7 +15,7 @@ const getSource = ( object ) => {
 };
 
 const getStyle = ( object ) => {
-	return {
+	return object._style = {
 		color: object.stroke.color.clone(),
 		hex: `#${ object.stroke.color.getHexString() }`,
 		opacity: object.stroke.opacity,

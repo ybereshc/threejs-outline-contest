@@ -19,6 +19,8 @@ const getLCGRandom = ( seed = 1 ) => {
 	return value / 0x7FFF; // нормализуем в [0,1]
 };
 
+Math.random = getLCGRandom.bind();
+
 const getRandom = () => {
 	return getLCGRandom( 42 );
 	// return getLCGRandom( Date.now() );
